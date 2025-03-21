@@ -5,7 +5,7 @@ import MapView, { UrlTile, PROVIDER_DEFAULT, Polyline, PROVIDER_GOOGLE, } from "
 import { useLocation } from '@/hooks/useLocation';
 
 export default function App() {
-  const { currentLatitude, currentLongitude, errorMsg, getUserLocation } = useLocation();
+  const { currentLatitude, currentLongitude, errorMsg, isBackgroundTracking} = useLocation();
 
   const coordinatesHistory = [
     { latitude: 37.4221, longitude: -122.0841 }, 
@@ -36,8 +36,6 @@ export default function App() {
           strokeWidth={4} 
         />
       </MapView>
-
-      {/*<Button title="Refresh Location" onPress={getUserLocation} />*/}
     </View>
   );
 }
@@ -48,6 +46,6 @@ const styles = StyleSheet.create({
   },
   map: {
     width: '100%',
-    height: '80%',
+    height: '100%',
   },
 });
