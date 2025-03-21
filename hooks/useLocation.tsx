@@ -3,12 +3,13 @@ import * as Location from "expo-location";
 
 export const useLocation = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [longitude, setLongitude] = useState<number | null>(null);
-  const [latitude, setLatitude] = useState<number | null>(null);
+  const [currentLongitude, setCurrentLongitude] = useState<number | null>(null);
+  const [currentLatitude, setCurrentLatitude] = useState<number | null>(null);
 
   const getUserLocation = async () => {
     try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      let { status } = await Location.requestBackgroundPermissionsAsync();
+
       if (status !== "granted") {
         setErrorMsg("Location permission not granted");
         return;
@@ -16,20 +17,20 @@ export const useLocation = () => {
 
       let { coords } = await Location.getCurrentPositionAsync();
       if (coords) {
-        setLatitude(coords.latitude);
-        setLongitude(coords.longitude);
-        console.log("lat and long:", coords.latitude, coords.longitude);
+        setCurrentLatitude(coords.latitude);
+        setCurrentLongitude(coords.longitude);
+        //console.log("lat and long:", coords.latitude, coords.longitude);
 
         let response = await Location.reverseGeocodeAsync({
           latitude: coords.latitude,
           longitude: coords.longitude,
         });
 
-        console.log("User Location:", response);
+        //console.log("User Location:", response);
       }
     } catch (error) {
       setErrorMsg("Error fetching location");
-      console.error(error);
+      //console.error(error);
     }
   };
 
@@ -37,7 +38,7 @@ export const useLocation = () => {
     getUserLocation();
   }, []);
 
-  return { latitude, longitude, errorMsg, getUserLocation };
+  return { currentLatitude, currentLongitude, errorMsg, getUserLocation };
 };
 
 
