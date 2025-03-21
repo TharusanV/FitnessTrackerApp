@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View , Text, Button } from 'react-native';
 
-import MapView, { UrlTile, PROVIDER_DEFAULT, Polyline, } from "react-native-maps";
+import MapView, { UrlTile, PROVIDER_DEFAULT, Polyline, PROVIDER_GOOGLE, } from "react-native-maps";
 import { useLocation } from '@/hooks/useLocation';
 
 export default function App() {
@@ -19,14 +19,15 @@ export default function App() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <MapView
-        provider={PROVIDER_DEFAULT} 
+        provider={PROVIDER_GOOGLE ?? PROVIDER_DEFAULT} 
         style={styles.map}
+        mapType="standard"
         region={{
           latitude: currentLatitude ?? 0, 
           longitude: currentLongitude ?? 0,
           //Zoom values below - Lower values = More zoomed in (closer view).
-          latitudeDelta: 0.03, 
-          longitudeDelta: 0.03,
+          latitudeDelta: 0.01, 
+          longitudeDelta: 0.01,
         }}
       >
         <Polyline
@@ -47,6 +48,6 @@ const styles = StyleSheet.create({
   },
   map: {
     width: '100%',
-    height: '100%',
+    height: '80%',
   },
 });

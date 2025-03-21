@@ -8,29 +8,36 @@ export const useLocation = () => {
 
   const getUserLocation = async () => {
     try {
-      let { status } = await Location.requestBackgroundPermissionsAsync();
-
-      if (status !== "granted") {
-        setErrorMsg("Location permission not granted");
+      // Request foreground permission first
+      let { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
+      if (foregroundStatus !== "granted") {
+        setErrorMsg("Foreground location permission not granted");
         return;
       }
 
-      let { coords } = await Location.getCurrentPositionAsync();
+      // Request background permission after foreground permission is granted
+      let { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
+      if (backgroundStatus !== "granted") {
+        setErrorMsg("Background location permission not granted");
+        return;
+      }
+
+      // Fetch current location
+      let { coords } = await Location.getCurrentPositionAsync({});
       if (coords) {
         setCurrentLatitude(coords.latitude);
         setCurrentLongitude(coords.longitude);
-        //console.log("lat and long:", coords.latitude, coords.longitude);
 
         let response = await Location.reverseGeocodeAsync({
           latitude: coords.latitude,
           longitude: coords.longitude,
         });
 
-        //console.log("User Location:", response);
+        console.log("User Location:", response);
       }
     } catch (error) {
       setErrorMsg("Error fetching location");
-      //console.error(error);
+      console.error(error);
     }
   };
 
@@ -40,5 +47,3 @@ export const useLocation = () => {
 
   return { currentLatitude, currentLongitude, errorMsg, getUserLocation };
 };
-
-
