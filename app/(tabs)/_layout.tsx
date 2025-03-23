@@ -11,7 +11,13 @@ import { Tabs } from 'expo-router'
 
 const _layout = () => {
   return (
-    <Tabs>
+    <Tabs 
+      screenOptions={({ route }) => ({
+        tabBarStyle: {
+          display: route.name === 'record' ? 'none' : 'flex',
+        },
+      })}
+    >
       <Tabs.Screen 
         name='index'
         options={{
@@ -40,7 +46,7 @@ const _layout = () => {
       <Tabs.Screen 
         name='record'
         options={{
-          title: 'Records', 
+          title: 'Record', 
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <>

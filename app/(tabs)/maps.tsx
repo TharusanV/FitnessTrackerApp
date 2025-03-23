@@ -47,7 +47,7 @@ const maps: React.FC = () => {
 
     requestPermissions();
     startForegroundTracking();
-    startBackgroundTracking();
+
   }, []);
 
 
@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
+    flex: 1,
     width: '100%',
     height: '100%',
   },
