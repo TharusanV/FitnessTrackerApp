@@ -94,24 +94,27 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    
   },
 
     /////////////////////////////////////////////////////////////////////////////////////
 
     headerContainer: {
-      backgroundColor: "#fff",
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
       width: "100%",
       paddingHorizontal: 15,
       paddingVertical: 5,
+      
+      backgroundColor: '#00a6ef',
     },
 
     textContainer: {
       alignSelf: "flex-start", 
       fontSize: 18,
       fontWeight: "bold",
+      color: 'white',
     },
 
     /////////////////////////////////////////////////////////////////////////////////////

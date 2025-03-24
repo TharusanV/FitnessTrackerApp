@@ -15,7 +15,9 @@ const _layout = () => {
       screenOptions={({ route }) => ({
         tabBarStyle: {
           display: route.name === 'record' ? 'none' : 'flex',
+          backgroundColor: '#00a6ef',
         },
+        
       })}
     >
       <Tabs.Screen 
@@ -25,7 +27,7 @@ const _layout = () => {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <>
-              <Image source={homeIcon} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+              <Image source={homeIcon} style={{ tintColor: focused ? 'white' : '#D3D3D3', width: 24, height: 24, resizeMode: 'contain' }} />
 
             </>
           )
@@ -38,7 +40,7 @@ const _layout = () => {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <>
-              <Image source={mapIcon} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+              <Image source={mapIcon} style={{ tintColor: focused ? 'white' : '#D3D3D3', width: 24, height: 24, resizeMode: 'contain' }} />
             </>
           )
         }}
@@ -50,7 +52,7 @@ const _layout = () => {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <>
-              <Image source={recordIcon} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+              <Image source={recordIcon} style={{ tintColor: focused ? 'white' : '#D3D3D3', width: 24, height: 24, resizeMode: 'contain' }} />
             </>
           )
         }}
@@ -62,7 +64,7 @@ const _layout = () => {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <>
-              <Image source={leaderboardIcon} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+              <Image source={leaderboardIcon} style={{ tintColor: focused ? 'white' : '#D3D3D3', width: 24, height: 24, resizeMode: 'contain' }} />
             </>
           )
         }}
@@ -74,7 +76,7 @@ const _layout = () => {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <>
-              <Image source={youIcon} style={{ width: 24, height: 24, resizeMode: 'contain' }} />
+              <Image source={youIcon} style={{ tintColor: focused ? 'white' : '#D3D3D3', width: 24, height: 24, resizeMode: 'contain' }} />
             </>
           )
         }}
