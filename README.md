@@ -1,6 +1,3 @@
-# FitnessTrackerApp
-
-
 <div align="center">
     <h3>Fitness App</h3>
     <p> React Native - Fitness Tracker App</p>

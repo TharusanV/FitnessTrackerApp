@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
       weeklyContainer_textHeader: {
         fontSize: 14,
         fontWeight: "bold",
+        
       },
 
       activityContainer: {

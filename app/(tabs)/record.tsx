@@ -1,10 +1,13 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, {useRef, useState, useEffect,} from 'react';
 import { useRouter } from 'expo-router';
 import useForegroundTracking from '../../hooks/useForegroundTracking'
 import useBackgroundTracking from '../../hooks/useBackgroundTracking'
 
+import * as Location from "expo-location";
 import MapView, { UrlTile, PROVIDER_DEFAULT, Polyline, PROVIDER_GOOGLE, Marker} from "react-native-maps";
-import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Text, AppState, AppStateStatus, } from "react-native";
+
+import useSimulatedMovement from "../../testing/useSimulatedMovement";
 
 interface LocationCoords {
   latitude: number;
@@ -14,14 +17,60 @@ interface LocationCoords {
 const record: React.FC  = () => {
   const router = useRouter();
 
+  const [appState, setAppState] = useState(AppState.currentState); // Manage app state changes
+
   const [currentLocation, setLocation] = useState<LocationCoords | null>(null);
+  const [routeCoordinates, setRouteCoordinates] = useState<LocationCoords[]>([]);
+  const [isLocationLoaded, setIsLocationLoaded] = useState(false);
+
+  const { startSimulation, stopSimulation, isRunning } = useSimulatedMovement(currentLocation,setLocation,setRouteCoordinates);
+
+  useEffect(() => {
+    const getInitialLocation = async () => {
+      const { coords } = await Location.getCurrentPositionAsync({});
+      const initialCoords = { latitude: coords.latitude, longitude: coords.longitude };
+
+      setLocation(initialCoords);
+      setIsLocationLoaded(true); 
+    };
+
+    getInitialLocation();
+  }, []);
+
+  useEffect(() => {
+    if (isLocationLoaded) {
+      startSimulation();
+    }
+  }, [isLocationLoaded]);
                         
   const { startForegroundTracking} = useForegroundTracking(setLocation);
   const { startBackgroundTracking} = useBackgroundTracking(setLocation);
 
+  /*
   useEffect(() => {
-    startForegroundTracking()
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      console.log(`App state changed to: ${nextAppState}`);
+      
+      setAppState(nextAppState);
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
+
+
+  useEffect(() => {
+    if (appState === "active") {startForegroundTracking(); } 
+    else {startBackgroundTracking();}
+  }, [appState]);
+  */
+
+
+
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -48,7 +97,15 @@ const record: React.FC  = () => {
             longitudeDelta: 0.01,
           }}
           showsUserLocation
-        />
+        >
+          {routeCoordinates.length > 1 && (
+            <Polyline
+              coordinates={routeCoordinates}
+              strokeWidth={5}
+              strokeColor="blue"
+            />
+          )}
+        </MapView>
       </View>
 
       {/* Row of Buttons - Evenly Spaced */}

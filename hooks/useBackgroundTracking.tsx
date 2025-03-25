@@ -17,7 +17,9 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   }
   if (data) {
     const { locations } = data as { locations: Location.LocationObject[] };
-    console.log("Background location update:", locations[0].coords);
+    const latestLocation = locations[0].coords;
+    setLocation:(latestLocation);
+    
   }
 });
 
@@ -37,14 +39,17 @@ const useBackgroundTracking = (setLocation: (value: LocationCoords) => void) => 
     }
   };
 
+
+
   useEffect(() => {
     checkPermissionFunction();
+  }, []);
   
-    if(permissionsGranted){
+  useEffect(() => {
+    if (permissionsGranted) {
       startBackgroundTracking();
     }
-  
-  }, []);
+  }, [permissionsGranted]); 
 
   return {startBackgroundTracking}
 

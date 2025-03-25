@@ -23,18 +23,21 @@ const useForegroundTracking = (setLocation: (value: LocationCoords) => void) => 
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
         });
+
+        console.log(location.coords);
       }
     );
   };
 
   useEffect(() => {
     checkPermissionFunction();
+  }, []); // Runs on mount
   
-    if(permissionsGranted){
+  useEffect(() => {
+    if (permissionsGranted) {
       startForegroundTracking();
     }
-  
-  }, []);
+  }, [permissionsGranted]);
 
   return {startForegroundTracking}
 
