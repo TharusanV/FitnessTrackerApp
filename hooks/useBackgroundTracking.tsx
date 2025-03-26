@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect} from 'react';
 import * as Location from "expo-location";
-import useLocationPermission from "../hooks/findLocationPermission"
+import useLocationPermission from "./useLocationPermission"
 import * as TaskManager from "expo-task-manager";
 
 interface LocationCoords {
@@ -32,7 +32,7 @@ const useBackgroundTracking = (setLocation: (value: LocationCoords) => void) => 
     if (!isRegistered) {
       await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
         accuracy: Location.Accuracy.Balanced,
-        deferredUpdatesInterval: 60000, // Every 1 min
+        deferredUpdatesInterval: 1000,
         distanceInterval: 10, 
         showsBackgroundLocationIndicator: true, // iOS only
       });
