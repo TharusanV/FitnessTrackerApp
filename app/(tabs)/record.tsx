@@ -33,10 +33,29 @@ const record: React.FC  = () => {
   const [isLocationLoaded, setIsLocationLoaded] = useState(false);
   const [isTracking, setIsTracking] = useState(false);
 
+  const haversineDistance = (previousCoords: LocationCoords, currentCoords: LocationCoords) => {
+    const toRad = (x: number) => (x * Math.PI) / 180;
+    const R = 6371000; // Earth's radius in meters
+
+    const dLat = toRad(currentCoords.latitude - previousCoords.latitude);
+    const dLon = toRad(currentCoords.longitude - previousCoords.longitude);
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(toRad(previousCoords.latitude)) * Math.cos(toRad(currentCoords.latitude)) *
+              Math.sin(dLon / 2) *
+              Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in meters
+  };
+
+
   //Hooks
-  const { startForegroundTracking} = useForegroundTracking(setLocation, setSpeed, setRouteCoordinates);
-  const { startBackgroundTracking} = useBackgroundTracking(setLocation, setSpeed, setRouteCoordinates);
+  const { startForegroundTracking} = useForegroundTracking(isTracking, haversineDistance, setLocation, setSpeed, setRouteCoordinates);
+  const { startBackgroundTracking} = useBackgroundTracking(isTracking, haversineDistance , setLocation, setSpeed, setRouteCoordinates);
   //const { startSimulation, stopSimulation, isRunning } = useSimulatedMovement(currentLocation,setLocation,setRouteCoordinates);
+
+  
 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {

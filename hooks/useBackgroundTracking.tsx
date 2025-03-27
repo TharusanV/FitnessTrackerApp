@@ -10,22 +10,17 @@ interface LocationCoords {
 
 const LOCATION_TASK_NAME = "background-location-task";
 
-TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
-  if (error) {
-    console.error("Background location error:", error);
-    return;
-  }
-  if (data) {
-    const { locations } = data as { locations: Location.LocationObject[] };
-    const latestLocation = locations[0].coords;
-    setLocation:(latestLocation);
-    
-  }
-});
-
-const useBackgroundTracking = (setLocation: (value: LocationCoords) => void) => {
+const useBackgroundTracking = (
+  isTracking: boolean,
+  haversineDistance: (value: LocationCoords, value2: LocationCoords) => number, 
+  setLocation: (value: LocationCoords) => void,
+  setSpeed: (value: number) => void,
+  setRouteCoordinates: (value: (prev: LocationCoords[]) => LocationCoords[]) => void,
+) => {
 
   const { permissionsGranted, checkPermissionFunction } = useLocationPermission();
+
+  const prevLocationRef = useRef<Location.LocationObject | null>(null);
 
   const startBackgroundTracking = async (): Promise<void> => {
     const isRegistered = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK_NAME);
@@ -33,12 +28,43 @@ const useBackgroundTracking = (setLocation: (value: LocationCoords) => void) => 
       await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
         accuracy: Location.Accuracy.Balanced,
         deferredUpdatesInterval: 1000,
-        distanceInterval: 10, 
-        showsBackgroundLocationIndicator: true, // iOS only
+        distanceInterval: 5, 
+        pausesUpdatesAutomatically: true,
+        foregroundService: {
+          notificationTitle: "Tracking your location",
+          notificationBody: "App is tracking your location in the background.",
+        },
       });
     }
   };
 
+
+  TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
+    if (error) {
+      console.error("Background location error:", error);
+      return;
+    }
+    if (data) {
+      const { locations } = data as { locations: Location.LocationObject[] };
+
+      if (locations.length > 0) {
+        const latestLocation = locations[0].coords;
+        setLocation(latestLocation);
+      
+        if (prevLocationRef.current && isTracking) {
+          setRouteCoordinates((prev) => [...prev, latestLocation ]); 
+
+          const distance = haversineDistance(prevLocationRef.current.coords, latestLocation);
+          const timeDiff = (locations[0].timestamp - prevLocationRef.current.timestamp) / 1000;
+          const speedCalc = distance / timeDiff;
+          setSpeed(speedCalc);
+        }
+
+        prevLocationRef.current = locations[0];
+      }
+    }
+  });
+  
 
 
   useEffect(() => {
@@ -54,5 +80,7 @@ const useBackgroundTracking = (setLocation: (value: LocationCoords) => void) => 
   return {startBackgroundTracking}
 
 }
+
+
 
 export default useBackgroundTracking
