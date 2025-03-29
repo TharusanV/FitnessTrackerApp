@@ -1,9 +1,6 @@
-import RecordBeforeTrackingUI from '@/UI/recordBeforeTrackingUI';
-import RecordCurrentTrackingUI from '@/UI/recordCurrentTrackingUI';
-
 import React, {useRef, useState, useEffect,} from 'react';
 import { useRouter } from 'expo-router';
-
+import MapView, { UrlTile, Polyline, PROVIDER_GOOGLE, PROVIDER_DEFAULT, Marker } from "react-native-maps";
 
 import useForegroundTracking from '../../hooks/useForegroundTracking'
 import useBackgroundTracking from '../../hooks/useBackgroundTracking'
@@ -11,6 +8,13 @@ import useBackgroundTracking from '../../hooks/useBackgroundTracking'
 import * as Location from "expo-location";
 
 import { View, TouchableOpacity, StyleSheet, Text, AppState, AppStateStatus, Image,  } from "react-native";
+
+const routeIcon = require("../../assets/icons/route.png");
+const cycleIcon = require("../../assets/icons/bicycle.png");
+const healthIcon = require("../../assets/icons/health.png");
+const beaconIcon = require("../../assets/icons/beacon.png");
+const musicIcon = require("../../assets/icons/music.png");
+const settingsIcon = require("../../assets/icons/settings.png");
 
 import useSimulatedMovement from "../../testing/useSimulatedMovement";
 
@@ -82,22 +86,207 @@ const record: React.FC  = () => {
 
 
   return (
-    <View style={{ flex: 1 }}>
-      {isTracking ? 
-        <RecordCurrentTrackingUI /> 
-      : 
-        <RecordBeforeTrackingUI 
-          router={router} 
-          currentLocation={currentLocation} 
-          routeCoordinates={routeCoordinates} 
-          setIsTracking={setIsTracking} 
-        />
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => router.push('/')}>
+          <Text  style={styles.textContainer}>Close</Text>
+        </TouchableOpacity>
+
+        <View>
+          <Text style={styles.textContainer}>Ride</Text>
+        </View>
+
+        <TouchableOpacity>
+          <Image source={settingsIcon} style={{tintColor: "white", width: 24, height: 24, resizeMode: 'contain' }} />
+        </TouchableOpacity>
+      </View>
+
+      {/* MapView */}
+      <MapView
+        provider={PROVIDER_GOOGLE ?? PROVIDER_DEFAULT}
+        style={styles.map}
+        mapType="standard"
+        region={{
+          latitude: currentLocation?.latitude || 0,
+          longitude: currentLocation?.longitude || 0,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
+        showsUserLocation
+      >
+        {routeCoordinates.length > 1 && (
+          <Polyline
+            coordinates={routeCoordinates}
+            strokeWidth={5}
+            strokeColor="blue"
+          />
+        )}
+      </MapView>
+
+      <View style={styles.activityInfoContainer}>
+        <View style={styles.activityInfoContainer_div1}>
+          <Text style={styles.activityInfoText}>TIME</Text>
+          <Text style={styles.activityValue}>00:00:01</Text>
+        </View>
     
-      }
+        <View style={styles.activityInfoContainer_div2}>
+          <Text style={styles.activityInfoText}>AVG SPEED (KM/H)</Text>
+          <Text style={styles.activityValue}>0.00</Text>
+        </View>
+        
+        <View style={styles.activityInfoContainer_div3}>
+          <Text style={styles.activityInfoText}>DISTANCE (KM)</Text>
+          <Text style={styles.activityValue}>0.00</Text>
+        </View>
+      </View>
+
+      {/* Row of Buttons - Evenly Spaced */}
+      <View style={styles.buttonRowContainer}>
+        <TouchableOpacity>
+          <Image source={routeIcon} style={{tintColor: "white", width: 24, height: 24, resizeMode: 'contain' }} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image source={cycleIcon} style={{tintColor: "white", width: 24, height: 24, resizeMode: 'contain' }} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image source={healthIcon} style={{tintColor: "white", width: 24, height: 24, resizeMode: 'contain' }} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image source={beaconIcon} style={{tintColor: "white", width: 24, height: 24, resizeMode: 'contain' }} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image source={musicIcon} style={{tintColor: "white", width: 24, height: 24, resizeMode: 'contain' }} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Start Button */}
+      <View style={styles.stateButtonContainer}>
+        {isTracking ? 
+          <View style={{ flexDirection: "row", justifyContent: "center", gap: 15 }}>
+            <TouchableOpacity style={styles.circleWhite}>
+              <Text style={{ color: "black", fontWeight: "bold" }}>Pause</Text>
+            </TouchableOpacity>
+          
+            <TouchableOpacity style={styles.circleOrange} onPress={() => setIsTracking(true)}>
+              <Text style={{ color: "white", fontWeight: "bold" }}>Finish</Text>
+            </TouchableOpacity>
+          </View>
+
+        :
+          <View style={{ flexDirection: "row", justifyContent: "center", gap: 15 }}>
+            <TouchableOpacity style={styles.circleOrange} onPress={() => setIsTracking(true)}>
+              <Text style={{ color: "white", fontWeight: "bold" }}>Start</Text>
+            </TouchableOpacity>          
+          </View>
+        }
+        
+      </View>
+
+
     </View>
   )
 }
 
+const styles = StyleSheet.create({
+  container: {
+    height: "100%",
+  },
+
+  headerContainer: {
+    backgroundColor: '#00a6ef',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 15,
+    height: "5%", 
+  },
+
+  textContainer: {
+    alignSelf: "flex-start",
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "white",
+  },
+  
+  map: {
+    width: "100%",
+    height: "75%",
+  },
+
+  buttonRowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly', 
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: '#00a6ef',
+    height: "5%",
+
+  },
+
+  stateButtonContainer: {
+    backgroundColor: '#00a6ef',
+    height: "15%",
+  },
+
+    circleOrange: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: "orange",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+
+    circleWhite: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: "white",
+      justifyContent: "center",
+      alignItems: "center",
+      
+    },
+
+
+
+
+    activityInfoContainer: {
+      position: "absolute",
+      bottom: 200,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+
+      activityInfoContainer_div1: {
+        flexDirection: "column",
+        width: "100%",
+        justifyContent: "center"
+      },
+
+      activityInfoContainer_div2: {
+        flexDirection: "column",
+        width: "50%",
+        justifyContent: "center"
+      },
+
+      activityInfoContainer_div3: {
+        flexDirection: "column",
+        width: "50%",
+        justifyContent: "center"
+      },
+
+        activityInfoText: {
+          fontSize: 12,
+          color: 'grey',
+        },
+
+        activityValue: {
+          fontSize: 18,
+          color: 'black',
+        },
+});
 
 
 export default record
