@@ -11,8 +11,15 @@ const useForegroundTracking = (
   isTracking: boolean,
   haversineDistance: (value: LocationCoords, value2: LocationCoords) => number, 
   setLocation: (value: LocationCoords) => void,
-  setSpeed: (value: number) => void,
+  
+  setDistance: (value: number) => void,
+  journeyDistance: number,
+
   setRouteCoordinates: (value: (prev: LocationCoords[]) => LocationCoords[]) => void,
+
+  setAverageSpeed: (value: number) => void,
+
+  journeyTimeElapsed: number,
 ) => {
 
 
@@ -35,10 +42,10 @@ const useForegroundTracking = (
         if (prevLocation.current && isTracking) {
           setRouteCoordinates((prev) => [...prev, {latitude: location.coords.latitude, longitude: location.coords.longitude} ]); 
 
-          const distance = haversineDistance(prevLocation.current.coords, location.coords);
-          const timeDiff = (location.timestamp - prevLocation.current.timestamp) / 1000; // Convert ms to seconds
-          const speedCalc = timeDiff > 0 ? distance / timeDiff : 0; // Speed in m/s
-          setSpeed(speedCalc);
+          const distanceKM = haversineDistance(prevLocation.current.coords, location.coords) + journeyDistance;
+          setDistance(distanceKM);
+
+          setAverageSpeed(distanceKM / journeyTimeElapsed);
         }
 
         prevLocation.current = location;

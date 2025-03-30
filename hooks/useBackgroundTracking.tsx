@@ -14,8 +14,15 @@ const useBackgroundTracking = (
   isTracking: boolean,
   haversineDistance: (value: LocationCoords, value2: LocationCoords) => number, 
   setLocation: (value: LocationCoords) => void,
-  setSpeed: (value: number) => void,
+  
+  setDistance: (value: number) => void,
+  journeyDistance: number,
+
   setRouteCoordinates: (value: (prev: LocationCoords[]) => LocationCoords[]) => void,
+
+  setAverageSpeed: (value: number) => void,
+
+  journeyTimeElapsed: number,
 ) => {
 
   const { permissionsGranted, checkPermissionFunction } = useLocationPermission();
@@ -54,10 +61,10 @@ const useBackgroundTracking = (
         if (prevLocationRef.current && isTracking) {
           setRouteCoordinates((prev) => [...prev, latestLocation ]); 
 
-          const distance = haversineDistance(prevLocationRef.current.coords, latestLocation);
-          const timeDiff = (locations[0].timestamp - prevLocationRef.current.timestamp) / 1000;
-          const speedCalc = distance / timeDiff;
-          setSpeed(speedCalc);
+          const distanceKM = haversineDistance(prevLocationRef.current.coords, latestLocation) + journeyDistance;
+          setDistance(distanceKM);
+
+          setAverageSpeed(distanceKM / journeyTimeElapsed);
         }
 
         prevLocationRef.current = locations[0];

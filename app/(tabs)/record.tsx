@@ -23,6 +23,8 @@ interface LocationCoords {
   longitude: number;
 }
 
+
+
 const record: React.FC  = () => {
   const router = useRouter();
 
@@ -31,12 +33,33 @@ const record: React.FC  = () => {
   const [currentLocation, setLocation] = useState<LocationCoords | null>(null);
 
   const [isTracking, setIsTracking] = useState(false);
+
   const [journeyTimeElapsed, setTimeElapsed] = useState(0);
-  const [journeySpeed, setSpeed] = useState(0);
+  const [journeyAverageSpeed, setAverageSpeed] = useState(0);
   const [journeyDistance, setDistance] = useState(0);
+  
   const [routeCoordinates, setRouteCoordinates] = useState<LocationCoords[]>([]);
   
-  
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (isTracking) {
+      timer = setInterval(() => {
+        setTimeElapsed((prevSeconds) => prevSeconds + 1);
+      }, 1000);
+    } 
+
+    return () => clearInterval(timer);
+  }, [isTracking]);
+
+  const formatTime = (time: number): string => {
+    const hrs = Math.floor(time / 3600);
+    const mins = Math.floor((time % 3600) / 60);
+    const secs = time % 60;
+    return `${hrs.toString().padStart(2, "0")}:${mins
+      .toString()
+      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
 
   const haversineDistance = (previousCoords: LocationCoords, currentCoords: LocationCoords) => {
     const toRad = (x: number) => (x * Math.PI) / 180;
@@ -51,13 +74,20 @@ const record: React.FC  = () => {
               Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in meters
+    return (R * c) / 1000; 
   };
 
 
   //Hooks
-  const { startForegroundTracking} = useForegroundTracking(isTracking, haversineDistance, setLocation, setSpeed, setRouteCoordinates);
-  const { startBackgroundTracking} = useBackgroundTracking(isTracking, haversineDistance , setLocation, setSpeed, setRouteCoordinates);
+  const { startForegroundTracking} = useForegroundTracking(
+    isTracking, haversineDistance, setLocation, 
+    setDistance, journeyDistance, setRouteCoordinates, setAverageSpeed, journeyTimeElapsed,
+  );
+
+  const { startBackgroundTracking} = useBackgroundTracking(
+    isTracking, haversineDistance, setLocation, 
+    setDistance, journeyDistance, setRouteCoordinates, setAverageSpeed,  journeyTimeElapsed,
+  );
   
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -125,21 +155,26 @@ const record: React.FC  = () => {
       </MapView>
 
       <View style={styles.activityInfoContainer}>
+        {/* Full-width section */}
         <View style={styles.activityInfoContainer_div1}>
           <Text style={styles.activityInfoText}>TIME</Text>
-          <Text style={styles.activityValue}>00:00:01</Text>
+          <Text style={styles.activityValue}>{formatTime(journeyTimeElapsed)}</Text>
         </View>
-    
-        <View style={styles.activityInfoContainer_div2}>
-          <Text style={styles.activityInfoText}>AVG SPEED (KM/H)</Text>
-          <Text style={styles.activityValue}>0.00</Text>
-        </View>
-        
-        <View style={styles.activityInfoContainer_div3}>
-          <Text style={styles.activityInfoText}>DISTANCE (KM)</Text>
-          <Text style={styles.activityValue}>0.00</Text>
+
+        {/* Two equal-width columns */}
+        <View style={styles.rowContainer}>
+          <View style={styles.activityInfoContainer_div2}>
+            <Text style={styles.activityInfoText}>AVG SPEED (KM/H)</Text>
+            <Text style={styles.activityValue}>{journeyAverageSpeed.toFixed(2)}</Text>
+          </View>
+          
+          <View style={styles.activityInfoContainer_div3}>
+            <Text style={styles.activityInfoText}>DISTANCE (KM)</Text>
+            <Text style={styles.activityValue}>{journeyDistance.toFixed(2)}</Text>
+          </View>
         </View>
       </View>
+
 
       {/* Row of Buttons - Evenly Spaced */}
       <View style={styles.buttonRowContainer}>
@@ -162,9 +197,9 @@ const record: React.FC  = () => {
 
       {/* Start Button */}
       <View style={styles.stateButtonContainer}>
-        {isTracking ? 
+        {(isTracking || journeyTimeElapsed > 0) ? 
           <View style={{ flexDirection: "row", justifyContent: "center", gap: 15 }}>
-            <TouchableOpacity style={styles.circleWhite}>
+            <TouchableOpacity style={styles.circleWhite} onPress={() => setIsTracking(!isTracking)}>
               <Text style={{ color: "black", fontWeight: "bold" }}>Pause</Text>
             </TouchableOpacity>
           
@@ -172,7 +207,6 @@ const record: React.FC  = () => {
               <Text style={{ color: "white", fontWeight: "bold" }}>Finish</Text>
             </TouchableOpacity>
           </View>
-
         :
           <View style={{ flexDirection: "row", justifyContent: "center", gap: 15 }}>
             <TouchableOpacity style={styles.circleOrange} onPress={() => setIsTracking(true)}>
@@ -254,38 +288,46 @@ const styles = StyleSheet.create({
 
     activityInfoContainer: {
       position: "absolute",
-      bottom: 200,
+      width: "100%",
+      bottom: "20%",
+      backgroundColor: "#00a6ef",
+      justifyContent: "center",
+      alignItems: "center",
+      paddingVertical: 15,
+    },
+  
+    activityInfoContainer_div1: {
+      width: "100%",
+      alignItems: "center",
+      marginBottom: 10, // Adds spacing between div1 and div2/3
+    },
+  
+    rowContainer: {
       flexDirection: "row",
+      width: "100%",
+      justifyContent: "center",
+    },
+  
+    activityInfoContainer_div2: {
+      width: "50%",
       alignItems: "center",
     },
-
-      activityInfoContainer_div1: {
-        flexDirection: "column",
-        width: "100%",
-        justifyContent: "center"
-      },
-
-      activityInfoContainer_div2: {
-        flexDirection: "column",
-        width: "50%",
-        justifyContent: "center"
-      },
-
-      activityInfoContainer_div3: {
-        flexDirection: "column",
-        width: "50%",
-        justifyContent: "center"
-      },
-
-        activityInfoText: {
-          fontSize: 12,
-          color: 'grey',
-        },
-
-        activityValue: {
-          fontSize: 18,
-          color: 'black',
-        },
+  
+    activityInfoContainer_div3: {
+      width: "50%",
+      alignItems: "center",
+    },
+  
+    activityInfoText: {
+      fontSize: 12,
+      fontWeight: "bold",
+      color: "white",
+    },
+  
+    activityValue: {
+      fontSize: 18,
+      color: "black",
+    },
 });
 
 
