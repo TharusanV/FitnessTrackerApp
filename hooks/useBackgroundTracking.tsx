@@ -12,15 +12,18 @@ const LOCATION_TASK_NAME = "background-location-task";
 
 const useBackgroundTracking = (
   isTracking: boolean,
-  haversineDistance: (value: LocationCoords, value2: LocationCoords) => number, 
+  haversineDistance: (value: LocationCoords, value2: LocationCoords) => number,
+
   setLocation: (value: LocationCoords) => void,
-  
-  setDistance: (value: number) => void,
+  currentLocation: LocationCoords | null,
+
+  addToDistance: (value: number) => void,
   journeyDistance: number,
 
   setRouteCoordinates: (value: (prev: LocationCoords[]) => LocationCoords[]) => void,
 
   setAverageSpeed: (value: number) => void,
+  journeyAverageSpeed: number, 
 
   journeyTimeElapsed: number,
 ) => {
@@ -33,9 +36,9 @@ const useBackgroundTracking = (
     const isRegistered = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK_NAME);
     if (!isRegistered) {
       await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.Balanced,
+        accuracy: Location.Accuracy.High,
         deferredUpdatesInterval: 1000,
-        distanceInterval: 5, 
+        distanceInterval: 1, 
         pausesUpdatesAutomatically: true,
         foregroundService: {
           notificationTitle: "Tracking your location",
@@ -61,8 +64,8 @@ const useBackgroundTracking = (
         if (prevLocationRef.current && isTracking) {
           setRouteCoordinates((prev) => [...prev, latestLocation ]); 
 
-          const distanceKM = haversineDistance(prevLocationRef.current.coords, latestLocation) + journeyDistance;
-          setDistance(distanceKM);
+          const distanceKM = haversineDistance(prevLocationRef.current.coords, latestLocation);
+          addToDistance(distanceKM);
 
           setAverageSpeed(distanceKM / journeyTimeElapsed);
         }

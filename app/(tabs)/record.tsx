@@ -16,8 +16,6 @@ const beaconIcon = require("../../assets/icons/beacon.png");
 const musicIcon = require("../../assets/icons/music.png");
 const settingsIcon = require("../../assets/icons/settings.png");
 
-import useSimulatedMovement from "../../testing/useSimulatedMovement";
-
 interface LocationCoords {
   latitude: number;
   longitude: number;
@@ -34,11 +32,25 @@ const record: React.FC  = () => {
 
   const [isTracking, setIsTracking] = useState(false);
 
-  const [journeyTimeElapsed, setTimeElapsed] = useState(0);
-  const [journeyAverageSpeed, setAverageSpeed] = useState(0);
-  const [journeyDistance, setDistance] = useState(0);
+  const [journeyTimeElapsed, setTimeElapsed] = useState<number>(0);
+  const [journeyAverageSpeed, setAverageSpeed] = useState<number>(0);
+  const [journeyDistance, setDistance] = useState<number>(0);
   
   const [routeCoordinates, setRouteCoordinates] = useState<LocationCoords[]>([]);
+
+  const addToDistance = (newDistance: number) => {
+    setDistance((prevDistance) => prevDistance + newDistance);
+  };
+
+  const resetJourneyData = () => {
+    setIsTracking(false);
+    setTimeElapsed(0);
+    setAverageSpeed(0);
+    setDistance(0);
+    setRouteCoordinates([]);
+  };
+
+
   
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -51,6 +63,7 @@ const record: React.FC  = () => {
 
     return () => clearInterval(timer);
   }, [isTracking]);
+
 
   const formatTime = (time: number): string => {
     const hrs = Math.floor(time / 3600);
@@ -80,14 +93,17 @@ const record: React.FC  = () => {
 
   //Hooks
   const { startForegroundTracking} = useForegroundTracking(
-    isTracking, haversineDistance, setLocation, 
-    setDistance, journeyDistance, setRouteCoordinates, setAverageSpeed, journeyTimeElapsed,
+    isTracking, haversineDistance, 
+    setLocation, currentLocation,
+    addToDistance, journeyDistance, setRouteCoordinates, setAverageSpeed, journeyAverageSpeed, journeyTimeElapsed,
   );
 
   const { startBackgroundTracking} = useBackgroundTracking(
-    isTracking, haversineDistance, setLocation, 
-    setDistance, journeyDistance, setRouteCoordinates, setAverageSpeed,  journeyTimeElapsed,
+    isTracking, haversineDistance, 
+    setLocation, currentLocation, 
+    addToDistance, journeyDistance, setRouteCoordinates, setAverageSpeed, journeyAverageSpeed, journeyTimeElapsed,
   );
+
   
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -107,19 +123,19 @@ const record: React.FC  = () => {
   useEffect(() => {
     if (appState === "active"){
       startForegroundTracking(); 
-      //startSimulation();
     } 
     else {
       startBackgroundTracking();
     }
-  }, [appState]);
+  }, [appState, isTracking]);
+
 
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => router.push('/')}>
+        <TouchableOpacity onPress={() => { resetJourneyData(); router.push('/');}}>
           <Text  style={styles.textContainer}>Close</Text>
         </TouchableOpacity>
 

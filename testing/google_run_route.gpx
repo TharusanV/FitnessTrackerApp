@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='utf-8'?>
+<gpx version="1.1" creator="ChatGPT">
+  <trk>
+    <name>Running Route from Google HQ</name>
+    <trkseg>
+      <trkpt lat="37.422" lon="-122.084">
+        <ele>10</ele>
+        <time>2025-03-31T17:40:40.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.421499999999995" lon="-122.084">
+        <ele>11</ele>
+        <time>2025-03-31T17:40:42.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.421" lon="-122.084">
+        <ele>12</ele>
+        <time>2025-03-31T17:40:44.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.4205" lon="-122.084">
+        <ele>13</ele>
+        <time>2025-03-31T17:40:46.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.419999999999995" lon="-122.084">
+        <ele>14</ele>
+        <time>2025-03-31T17:40:48.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.4195" lon="-122.084">
+        <ele>10</ele>
+        <time>2025-03-31T17:40:50.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.419" lon="-122.084">
+        <ele>11</ele>
+        <time>2025-03-31T17:40:52.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.418499999999995" lon="-122.084">
+        <ele>12</ele>
+        <time>2025-03-31T17:40:54.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.418" lon="-122.084">
+        <ele>13</ele>
+        <time>2025-03-31T17:40:56.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.4175" lon="-122.084">
+        <ele>14</ele>
+        <time>2025-03-31T17:40:58.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.416999999999994" lon="-122.084">
+        <ele>10</ele>
+        <time>2025-03-31T17:41:00.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.4165" lon="-122.084">
+        <ele>11</ele>
+        <time>2025-03-31T17:41:02.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.416" lon="-122.084">
+        <ele>12</ele>
+        <time>2025-03-31T17:41:04.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.415499999999994" lon="-122.084">
+        <ele>13</ele>
+        <time>2025-03-31T17:41:06.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.415" lon="-122.084">
+        <ele>14</ele>
+        <time>2025-03-31T17:41:08.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.4145" lon="-122.084">
+        <ele>10</ele>
+        <time>2025-03-31T17:41:10.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.413999999999994" lon="-122.084">
+        <ele>11</ele>
+        <time>2025-03-31T17:41:12.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.4135" lon="-122.084">
+        <ele>12</ele>
+        <time>2025-03-31T17:41:14.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.413" lon="-122.084">
+        <ele>13</ele>
+        <time>2025-03-31T17:41:16.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.412499999999994" lon="-122.084">
+        <ele>14</ele>
+        <time>2025-03-31T17:41:18.432045Z</time>
+      </trkpt>
+      <trkpt lat="37.412" lon="-122.084">
+        <ele>10</ele>
+        <time>2025-03-31T17:41:20.432045Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
