@@ -31,6 +31,7 @@ const record: React.FC  = () => {
   const [currentLocation, setLocation] = useState<LocationCoords | null>(null);
 
   const [isTracking, setIsTracking] = useState(false);
+  const [isJourneyFinished, setJourneyFinished] = useState(false);
 
   const [journeyTimeElapsed, setTimeElapsed] = useState<number>(0);
   const [journeyAverageSpeed, setAverageSpeed] = useState<number>(0);
@@ -50,8 +51,23 @@ const record: React.FC  = () => {
     setRouteCoordinates([]);
   };
 
+  const cancelJourney = () =>{
+    resetJourneyData();
+    router.push('/');
+  }
 
-  
+  const startJourney = () => {
+    setIsTracking(true);
+  }
+
+  const pauseJourney = () => {
+    setIsTracking(!isTracking)
+  }
+
+  const finishJourney = () => {
+    setIsTracking(false)
+  }
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
@@ -64,6 +80,17 @@ const record: React.FC  = () => {
     return () => clearInterval(timer);
   }, [isTracking]);
 
+
+  useEffect(() => {
+    if (journeyTimeElapsed > 0) {
+      const newAvgSpeed = journeyDistance / (journeyTimeElapsed / 3600);
+      setAverageSpeed(newAvgSpeed);
+    } 
+    else {
+      setAverageSpeed(0);
+    }
+  }, [journeyDistance]); 
+  
 
   const formatTime = (time: number): string => {
     const hrs = Math.floor(time / 3600);
@@ -92,17 +119,8 @@ const record: React.FC  = () => {
 
 
   //Hooks
-  const { startForegroundTracking} = useForegroundTracking(
-    isTracking, haversineDistance, 
-    setLocation, currentLocation,
-    addToDistance, journeyDistance, setRouteCoordinates, setAverageSpeed, journeyAverageSpeed, journeyTimeElapsed,
-  );
-
-  const { startBackgroundTracking} = useBackgroundTracking(
-    isTracking, haversineDistance, 
-    setLocation, currentLocation, 
-    addToDistance, journeyDistance, setRouteCoordinates, setAverageSpeed, journeyAverageSpeed, journeyTimeElapsed,
-  );
+  const { startForegroundTracking} = useForegroundTracking(isTracking, haversineDistance, setLocation, addToDistance, setRouteCoordinates,);
+  const { startBackgroundTracking} = useBackgroundTracking(isTracking, haversineDistance, setLocation, addToDistance, setRouteCoordinates,);
 
   
   useEffect(() => {
@@ -135,7 +153,7 @@ const record: React.FC  = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => { resetJourneyData(); router.push('/');}}>
+        <TouchableOpacity onPress={() => { cancelJourney(); }}>
           <Text  style={styles.textContainer}>Close</Text>
         </TouchableOpacity>
 
@@ -215,17 +233,17 @@ const record: React.FC  = () => {
       <View style={styles.stateButtonContainer}>
         {(isTracking || journeyTimeElapsed > 0) ? 
           <View style={{ flexDirection: "row", justifyContent: "center", gap: 15 }}>
-            <TouchableOpacity style={styles.circleWhite} onPress={() => setIsTracking(!isTracking)}>
+            <TouchableOpacity style={styles.circleWhite} onPress={() => pauseJourney()}>
               <Text style={{ color: "black", fontWeight: "bold" }}>Pause</Text>
             </TouchableOpacity>
           
-            <TouchableOpacity style={styles.circleOrange} onPress={() => setIsTracking(true)}>
+            <TouchableOpacity style={styles.circleOrange} onPress={() => finishJourney()}>
               <Text style={{ color: "white", fontWeight: "bold" }}>Finish</Text>
             </TouchableOpacity>
           </View>
         :
           <View style={{ flexDirection: "row", justifyContent: "center", gap: 15 }}>
-            <TouchableOpacity style={styles.circleOrange} onPress={() => setIsTracking(true)}>
+            <TouchableOpacity style={styles.circleOrange} onPress={() => startJourney()}>
               <Text style={{ color: "white", fontWeight: "bold" }}>Start</Text>
             </TouchableOpacity>          
           </View>
