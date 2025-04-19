@@ -24,7 +24,10 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About
-<img src="Screenshots/0.PNG" width="200"/> 
+<img src="Screenshots/1.PNG" width="200"/> 
+<img src="Screenshots/2.PNG" width="200"/> 
+<img src="Screenshots/3.PNG" width="200"/> 
+<img src="Screenshots/4.PNG" width="200"/> 
 
 <p> As someone who cycles everyday when possible, I use the popular fitness app 'Strava' to help with tracking and its great! With that said, recently I have wanted view my progress against friends/family. Strava being a business who has to make their subscription model sustainable, removed the leaderboard feature for the free tier in 2020. This got me thinking, why don't I just make my own version.<p>
 
